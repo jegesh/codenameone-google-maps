@@ -22,6 +22,8 @@ import com.codename1.impl.android.AndroidNativeUtil;
 import java.util.HashMap;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -229,6 +231,31 @@ public class InternalNativeMapsImpl implements LifecycleListener {
             }
         });
         return result[0];
+    }
+    
+    /**
+     * Draws a circle on the map and returns the Circle object key
+     * @param centerLat
+     * @param centerLng
+     * @param radius radius of circle in meters
+     * @param color color of format 0x00000000 (including transparency)
+     * @return 
+     */
+    public long drawCircle(final double centerLat, final double centerLng, final double radius,
+            final int color){
+        uniqueIdCounter++;
+        final long key = uniqueIdCounter;
+        AndroidNativeUtil.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                CircleOptions circOpt = new CircleOptions();
+                circOpt.center(new LatLng(centerLat, centerLng));
+                circOpt.fillColor(color);
+                Circle c = mapInstance.addCircle(circOpt);
+                markerLookup.put(key, c);
+            }
+        });
+        
+        return key;
     }
 
     public void removeMapElement(final long param) {

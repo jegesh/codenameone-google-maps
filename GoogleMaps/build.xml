@@ -66,7 +66,7 @@
         <copy file="codenameone_library_required.properties" todir="build/lib" />
         <copy file="codenameone_library.properties" todir="build/lib" />
         <antcall target="buildNativeIOS" />        
-        <antcall target="buildNativeRIM" />        
+        <!--<antcall target="buildNativeRIM" />-->        
         <antcall target="buildNativeAND" />        
         <antcall target="buildNativeSE" />        
         <antcall target="buildNativeWIN" />        

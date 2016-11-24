@@ -29,6 +29,7 @@ import com.codename1.maps.providers.OpenStreetMapProvider;
 import com.codename1.system.NativeLookup;
 import com.codename1.ui.Display;
 import com.codename1.ui.EncodedImage;
+import com.codename1.ui.Image;
 import com.codename1.ui.PeerComponent;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
@@ -199,6 +200,41 @@ public class MapContainer extends Container {
                 }
                 return;
             }
+        }
+    }
+    
+    public MapObject addCircle(double lat, double lng, double radius, int color) {
+        if(internalNative != null) {
+            
+            long key = internalNative.drawCircle(lat, lng, radius, color);
+            MapObject o = new MapObject();
+            o.mapKey = key;
+            markers.add(o);
+            return o;
+        } else {
+            PointLayer pl = new PointLayer(new Coord(lat, lng), "", Image.createImage((int)radius * 2, (int)radius *2, color));
+            if(points == null) {
+                points = new PointsLayer();
+                internalLightweight.addLayer(points);
+                points.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        PointLayer point = (PointLayer)evt.getSource();
+                        for(MapObject o : markers) {
+                            if(o.point == point) {
+                                if(o.callback != null) {
+                                    o.callback.actionPerformed(new ActionEvent(o));
+                                }
+                                return;
+                            }
+                        }
+                    }
+                });
+            }
+            points.addPoint(pl);
+            MapObject o = new MapObject();
+            o.point = pl;
+            markers.add(o);
+            return o;
         }
     }
     
