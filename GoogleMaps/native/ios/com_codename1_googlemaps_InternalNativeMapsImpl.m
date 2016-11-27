@@ -58,6 +58,11 @@ extern float scaleValue;
     return marker;
 }
 
+-(long long)addCircle:(double)lat lng:(double)lng radius:(double)radius color:(int)color
+{
+    return 0;
+}
+
 - (void) mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
     CGPoint pp = [mapView.projection pointForCoordinate:coordinate];
     com_codename1_googlemaps_MapContainer_fireTapEventStatic___int_int_int(CN1_THREAD_GET_STATE_PASS_ARG mapId, pp.x, pp.y);

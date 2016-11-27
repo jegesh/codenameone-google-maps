@@ -228,6 +228,10 @@ var o = {};
         
     };
 
+    o.addMarker__double_double_double_int = function(lat, lon, radius, color) {
+        return 0;
+    };
+    
     o.addMarker__byte_1ARRAY_double_double_java_lang_String_java_lang_String_boolean = function(param1, lat, lon, text, snippet, cb, callback) {
         ready(this, function() {
             var self = this;

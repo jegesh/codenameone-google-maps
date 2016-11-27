@@ -36,8 +36,10 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.util.EventDispatcher;
+import com.codename1.util.StringUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * An abstract Map API that encapsulates the device native map and seamlessly replaces
@@ -203,16 +205,30 @@ public class MapContainer extends Container {
         }
     }
     
-    public MapObject addCircle(double lat, double lng, double radius, int color) {
+    public MapObject addCircle(double lat, double lng, double radius) {
+        return addCircle(lat, lng, radius, 0xff0099, 0x00000000);
+    }
+    
+    /**
+     * draws a circle on the map that scales with the zoom
+     * @param lat
+     * @param lng
+     * @param radius
+     * @param color - including transparency (RGBA)
+     * @return 
+     */
+    public MapObject addCircle(double lat, double lng, double radius, int color,
+            int strokeColor) {
         if(internalNative != null) {
             
-            long key = internalNative.drawCircle(lat, lng, radius, color);
+            long key = internalNative.drawCircle(lat, lng, radius, color, strokeColor);
             MapObject o = new MapObject();
             o.mapKey = key;
             markers.add(o);
             return o;
         } else {
-            PointLayer pl = new PointLayer(new Coord(lat, lng), "", Image.createImage((int)radius * 2, (int)radius *2, color));
+            int w = getScaledSize(radius,  (int)getZoom());
+            PointLayer pl = new PointLayer(new Coord(lat, lng), "", Image.createImage(w, w, color));
             if(points == null) {
                 points = new PointsLayer();
                 internalLightweight.addLayer(points);
@@ -236,6 +252,39 @@ public class MapContainer extends Container {
             markers.add(o);
             return o;
         }
+    }
+    
+    private int getScaledSize(double radius, int zoom){
+       HashMap<Integer, Float> scaleMap = new HashMap();
+       String[] scales = new String[]{
+            "20 : 1128.497220",
+            "19 : 2256.994440",
+            "18 : 4513.988880",
+            "17 : 9027.977761",
+            "16 : 18055.955520",
+            "15 : 36111.911040",
+            "14 : 72223.822090",
+            "13 : 144447.644200",
+            "12 : 288895.288400",
+            "11 : 577790.576700",
+            "10 : 1155581.153000",
+            "9  : 2311162.307000",
+            "8  : 4622324.614000",
+            "7  : 9244649.227000",
+            "6  : 18489298.450000",
+            "5  : 36978596.910000",
+            "4  : 73957193.820000",
+            "3  : 147914387.600000",
+            "2  : 295828775.300000",
+            "1  : 591657550.500000"
+        };
+        for (String s:scales){
+            List<String> val = StringUtil.tokenize(s, ":");
+            scaleMap.put(Integer.parseInt(val.get(0).trim()), Float.parseFloat(val.get(1).trim()));
+        }
+        double mm = radius * 1000; // this needs to be tested on different platforms
+        double scaledMm = mm/scaleMap.get(zoom);
+        return Display.getInstance().convertToPixels((float)scaledMm);
     }
     
     /**
@@ -522,6 +571,14 @@ public class MapContainer extends Container {
     static void fireTapEventStatic(int mapId, int x, int y) {
         final MapContainer mc = instances.get(mapId);
         if(mc != null) {
+            mc.fireTapEvent(x, y);
+        }
+    }
+    
+    static void fireLongPressEventStatic(int mapId, int x, int y){
+        final MapContainer mc = instances.get(mapId);
+        // TODO implement method to native long press
+        if(mc != null){
             mc.fireTapEvent(x, y);
         }
     }

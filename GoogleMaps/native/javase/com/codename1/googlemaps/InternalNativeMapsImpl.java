@@ -45,6 +45,10 @@ public class InternalNativeMapsImpl implements com.codename1.googlemaps.Internal
     public void addToPath(long param, double param1, double param2) {
     }
 
+    public long addCircle(double lat, double lng, double radius, int color){
+        return 0;
+    }
+    
     public long addMarker(byte[] param, double param1, double param2, String param3, String param4, boolean param5) {
         return 0;
     }
@@ -111,5 +115,9 @@ public class InternalNativeMapsImpl implements com.codename1.googlemaps.Internal
     }
 
     public void setRotateGestureEnabled(boolean e) {
+    }
+
+    public long drawCircle(double centerLat, double centerLng, double radius, int color) {
+        return 0;
     }
 }

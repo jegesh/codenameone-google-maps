@@ -44,7 +44,7 @@ import com.google.android.gms.maps.model.Polyline;
 import android.graphics.Point;
 //import com.codename1.impl.android.AndroidImplementation.PeerDraw;
 import com.codename1.io.Log;
-import com.codename1.ui.Display;
+import android.graphics.Color;
 import com.google.android.gms.maps.model.CameraPosition;
 
 public class InternalNativeMapsImpl implements LifecycleListener {
@@ -53,6 +53,7 @@ public class InternalNativeMapsImpl implements LifecycleListener {
     private GoogleMap mapInstance;
     private static int uniqueIdCounter = 0;
     private HashMap<Long, Marker> markerLookup = new HashMap<Long, Marker>();
+    private HashMap<Long, Circle> circleLookup = new HashMap<Long, Circle>();
     private HashMap<Marker, Long> listeners = new HashMap<Marker, Long>();
     private static boolean supported = true;
     private HashMap<Long, Polyline> paths = new HashMap<Long, Polyline>();
@@ -218,6 +219,7 @@ public class InternalNativeMapsImpl implements LifecycleListener {
             public void run() {
                 mapInstance.clear();
                 markerLookup.clear();
+                circleLookup.clear();
                 listeners.clear();
             }
         });
@@ -242,16 +244,18 @@ public class InternalNativeMapsImpl implements LifecycleListener {
      * @return 
      */
     public long drawCircle(final double centerLat, final double centerLng, final double radius,
-            final int color){
+            final int color, final int strokeColor){
         uniqueIdCounter++;
         final long key = uniqueIdCounter;
         AndroidNativeUtil.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 CircleOptions circOpt = new CircleOptions();
                 circOpt.center(new LatLng(centerLat, centerLng));
+                circOpt.radius(radius);
                 circOpt.fillColor(color);
+                circOpt.strokeColor(strokeColor);
                 Circle c = mapInstance.addCircle(circOpt);
-                markerLookup.put(key, c);
+                circleLookup.put(key, c);
             }
         });
         
@@ -269,11 +273,21 @@ public class InternalNativeMapsImpl implements LifecycleListener {
                     return;
                 }
                 
+                Circle c = circleLookup.get(param);
+                if(c != null){
+                    c.remove();
+                    circleLookup.remove(c);
+                    // TODO listeners.remove(c);
+                    return;
+                }
+                
                 Polyline p = paths.get(param);
                 if(p != null) {
                     p.remove();
                     paths.remove(param);
                 }
+                
+                
             }
         });
     }

@@ -45,7 +45,7 @@ GMSMapView *mapView;
 -(BOOL)isSupported;
 -(void)deinitialize;
 -(void)initialize;
-
+-(long long)addCircle:(double)lat lng:(double)lng radius:(double)radius color:(int)color;
 -(void)calcScreenPosition:(double)param  param1:(double)param1;
 -(int)getScreenX;
 -(int) getScreenY;

@@ -33,7 +33,7 @@ public interface InternalNativeMaps extends NativeInterface {
     public int getMaxZoom();
     public int getMinZoom();
     public long addMarker(byte[] icon, double lat, double lon, String text, String longText, boolean callback);
-    public long drawCircle(double centerLat, double centerLng, double radius, int color);
+    public long drawCircle(double centerLat, double centerLng, double radius, int color, int strokeColor);
     public long beginPath();
     public void addToPath(long pathId, double lat, double lon);
     public long finishPath(long pathId);

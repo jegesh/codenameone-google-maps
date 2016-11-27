@@ -107,6 +107,10 @@ public class InternalNativeMapsImpl {
         return 0;
     }
 
+    public long addCircle(double lat, double lng, double radius, int color) {
+        return 0;
+    }
+    
     public void setShowMyLocation(boolean show) {
     }
 
